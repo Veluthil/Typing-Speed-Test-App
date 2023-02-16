@@ -10,12 +10,18 @@ class Screen:
         self.window.title("Typing Speed App")
         self.window.minsize(150, 150)
         self.window.config(padx=50, pady=50, bg="#000000")
-        self.create_widgets()
+
         self.label = Label()
+        self.entry_field = Entry()
+        self.entry = Entry()
 
         self.set_of_words = []
         self.text = ""
+        self.entry_txt = ""
+        self.spelling = []
+        self.spelling_points = 0
 
+        self.create_widgets()
         self.window.mainloop()
 
     def create_text_easy(self):
@@ -46,9 +52,39 @@ class Screen:
         self.set_of_words.clear()
         self.text = ""
         self.label.destroy()
+        self.spelling.clear()
+        self.entry_field.delete(0, END)
+
+    def text_callback(self, var, index, mode):
+        # print("Written {}".format(self.entry_field.get()))
+        self.entry_txt = self.entry_field.get()
+        self.check_spelling()
 
     def check_spelling(self):
-        pass
+        letters = []
+        letters_string = ""
+        try:
+            # if len(self.entry.get()) < len(self.spelling):
+            #     self.spelling_points -= 1
+            #     self.spelling.pop()
+
+            for letter in self.entry_txt:
+                letters.append(letter)
+                letters_string = ''.join(letters)
+
+            if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
+                self.spelling.append("ok")
+                self.spelling_points += 1
+            else:
+                self.spelling.append("wrong")
+                self.spelling_points -= 1
+
+            print(self.spelling[-1])
+            print(self.spelling)
+            print(letters_string)
+            print(self.spelling_points)
+        except IndexError:
+            print("First generate text!")
 
     def count_time(self):
         pass
@@ -73,6 +109,12 @@ class Screen:
         hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
         hard.grid(column=1, row=1)
         # entry field
+        entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
+        entry_label.grid(column=1, row=5)
+        self.entry = StringVar()
+        self.entry.trace_add('write', self.text_callback)
+        self.entry_field = Entry(self.window, textvariable=self.entry, bg="#242424", fg="#fafafa")
+        self.entry_field.grid(column=1, row=6, columnspan=2)
         # restart button
         # exit button
         pass
