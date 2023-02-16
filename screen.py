@@ -1,6 +1,7 @@
 from tkinter import *
 from english_words import get_english_words_set
 import random
+import keyboard
 
 
 class Screen:
@@ -14,6 +15,7 @@ class Screen:
         self.label = Label()
         self.entry_field = Entry()
         self.entry = Entry()
+        self.keyboard = True
 
         self.set_of_words = []
         self.text = ""
@@ -54,37 +56,51 @@ class Screen:
         self.label.destroy()
         self.spelling.clear()
         self.entry_field.delete(0, END)
+        self.spelling_points = 0
 
     def text_callback(self, var, index, mode):
         # print("Written {}".format(self.entry_field.get()))
         self.entry_txt = self.entry_field.get()
         self.check_spelling()
 
+    def backspace(self, event):
+        try:
+            self.spelling.remove(self.spelling[-1])
+            self.spelling_points = self.count_points()
+            return self.spelling, self.spelling_points
+        except IndexError:
+            pass
+
+    def count_points(self):
+        points = 0
+        for check in self.spelling:
+            if check == "ok":
+                points += 1
+            else:
+                pass
+        return points
+
     def check_spelling(self):
         letters = []
         letters_string = ""
         try:
-            # if len(self.entry.get()) < len(self.spelling):
-            #     self.spelling_points -= 1
-            #     self.spelling.pop()
-
             for letter in self.entry_txt:
                 letters.append(letter)
                 letters_string = ''.join(letters)
 
             if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
-                self.spelling.append("ok")
-                self.spelling_points += 1
+                if keyboard.read_key() != "backspace":
+                    self.spelling.append("ok")
+                    self.spelling_points = self.count_points()
             else:
                 self.spelling.append("wrong")
-                self.spelling_points -= 1
+                self.spelling_points = self.count_points()
 
-            print(self.spelling[-1])
             print(self.spelling)
             print(letters_string)
             print(self.spelling_points)
         except IndexError:
-            print("First generate text!")
+            pass
 
     def count_time(self):
         pass
@@ -115,6 +131,8 @@ class Screen:
         self.entry.trace_add('write', self.text_callback)
         self.entry_field = Entry(self.window, textvariable=self.entry, bg="#242424", fg="#fafafa")
         self.entry_field.grid(column=1, row=6, columnspan=2)
+        self.entry_field.bind("<BackSpace>", self.backspace)
+
         # restart button
         # exit button
         pass
