@@ -1,7 +1,10 @@
+import time
 from tkinter import *
+from tkinter import messagebox
 from english_words import get_english_words_set
 import random
 import keyboard
+import math
 
 
 class Screen:
@@ -10,12 +13,15 @@ class Screen:
         self.window = Tk()
         self.window.title("Typing Speed App")
         self.window.minsize(150, 150)
-        self.window.config(padx=50, pady=50, bg="#000000")
+        self.window.config(padx=30, pady=10, bg="#000000")
 
         self.label = Label()
         self.entry_field = Entry()
         self.entry = Entry()
+        self.canvas = Canvas()
+        self.timer_text = None
         self.keyboard = True
+        self.time = None
 
         self.set_of_words = []
         self.text = ""
@@ -65,7 +71,7 @@ class Screen:
 
     def backspace(self, event):
         try:
-            self.spelling.remove(self.spelling[-1])
+            self.spelling.pop()
             self.spelling_points = self.count_points()
             return self.spelling, self.spelling_points
         except IndexError:
@@ -78,6 +84,8 @@ class Screen:
                 points += 1
             else:
                 pass
+        if len(self.spelling) == 0:
+            points = 0
         return points
 
     def check_spelling(self):
@@ -87,23 +95,30 @@ class Screen:
             for letter in self.entry_txt:
                 letters.append(letter)
                 letters_string = ''.join(letters)
-
-            if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
-                if keyboard.read_key() != "backspace":
+            if keyboard.read_key() != "backspace":
+                if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
                     self.spelling.append("ok")
                     self.spelling_points = self.count_points()
-            else:
-                self.spelling.append("wrong")
-                self.spelling_points = self.count_points()
+                else:
+                    self.spelling.append("wrong")
+                    self.spelling_points = self.count_points()
 
-            print(self.spelling)
-            print(letters_string)
-            print(self.spelling_points)
         except IndexError:
             pass
 
-    def count_time(self):
-        pass
+        print(self.spelling)
+        print(letters_string)
+        print(self.spelling_points)
+
+    # def count_down(self):
+    #     count_sec = 60
+    #     if count_sec < 10:
+    #         count_sec = f"0{count_sec}"
+    #     self.canvas.itemconfig(self.timer_text, text=f"{count_sec}")
+    #     if count_sec > 0:
+    #         self.time = self.window.after(1000, self.count_down, count_sec - 1)
+    #     else:
+    #         messagebox.showinfo("End", "End")
 
     def count_score(self):
         pass
@@ -115,7 +130,13 @@ class Screen:
         pass
 
     def create_widgets(self):
+        self.canvas = Canvas(width=100, height=30, bg="#000000", highlightthickness=0)
         # timer
+        self.timer_text = self.canvas.create_text(10, 10, text="60", fill="white", font=("Arial", 12))
+        self.canvas.grid(column=1, row=0)
+        # seconds = StringVar()
+        # seconds.set("60")
+        # characters per minute
         # words per minute
         # mistakes
         # current highest score
@@ -126,11 +147,11 @@ class Screen:
         hard.grid(column=1, row=1)
         # entry field
         entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
-        entry_label.grid(column=1, row=5)
+        entry_label.grid(column=0, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
-        self.entry_field = Entry(self.window, textvariable=self.entry, bg="#242424", fg="#fafafa")
-        self.entry_field.grid(column=1, row=6, columnspan=2)
+        self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa")
+        self.entry_field.grid(column=0, row=6, columnspan=2)
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button

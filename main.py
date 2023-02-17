@@ -6,7 +6,7 @@ from screen import *
 # todo create entry field where typing will take place
 # todo function that will check correct spelling and count mistakes
 # todo function that will start counting time from first letter typed and end with the last
-# todo function that will save score - also txt file to save scores
+# todo function that will save score of cpm and wpm - also txt file to save scores
 # todo buttons to close and restart
 
 
