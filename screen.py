@@ -161,7 +161,7 @@ class Screen:
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
-        restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
-                         command=lambda: [self.restart(), self.clear_screen()])
-        restart.grid(column=2, row=2)
+        # restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
+        #                  command=lambda: [self.restart(), self.clear_screen()])
+        # restart.grid(column=2, row=2)
         # exit button
