@@ -18,10 +18,10 @@ class Screen:
         self.label = Label()
         self.entry_field = Entry()
         self.entry = Entry()
-        self.canvas = Canvas()
         self.timer_text = None
         self.keyboard = True
         self.time = None
+        # self.countdown = False
 
         self.set_of_words = []
         self.text = ""
@@ -37,7 +37,7 @@ class Screen:
         with open("common_english_words.txt", "r") as text:
             all_text = text.read()
             words = list(map(str, all_text.split()))
-            for word in range(17):
+            for word in range(12):
                 self.set_of_words.append(random.choice(words))
             self.label = Label(self.window, text=f"{self.change_into_txt(self.set_of_words).lower()}", fg="#fafafa",
                                bg="#000000", font=("Arial", 20, "bold"), wraplength=600)
@@ -45,7 +45,7 @@ class Screen:
 
     def create_text_hard(self):
         self.clear_screen()
-        for word in range(11):
+        for word in range(9):
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.label = Label(self.window, text=f"{self.change_into_txt(self.set_of_words)}", fg="#fafafa", bg="#000000",
                            font=("Arial", 20, "bold"), wraplength=600)
@@ -63,11 +63,13 @@ class Screen:
         self.spelling.clear()
         self.entry_field.delete(0, END)
         self.spelling_points = 0
+        self.window.update()
 
     def text_callback(self, var, index, mode):
         # print("Written {}".format(self.entry_field.get()))
         self.entry_txt = self.entry_field.get()
         self.check_spelling()
+        self.start_timer()
 
     def backspace(self, event):
         try:
@@ -110,32 +112,36 @@ class Screen:
         print(letters_string)
         print(self.spelling_points)
 
-    # def count_down(self):
-    #     count_sec = 60
-    #     if count_sec < 10:
-    #         count_sec = f"0{count_sec}"
-    #     self.canvas.itemconfig(self.timer_text, text=f"{count_sec}")
-    #     if count_sec > 0:
-    #         self.time = self.window.after(1000, self.count_down, count_sec - 1)
-    #     else:
-    #         messagebox.showinfo("End", "End")
+    def count_down(self, count):
+        if count >= 0:
+            self.time = self.window.after(1000, self.count_down, count-1)
+            self.timer_text['text'] = count
+        else:
+            self.window.after_cancel(self.time)
+            messagebox.showinfo("End", "End")
+
+    def start_timer(self):
+        countdown = len(self.entry_txt) == 1
+        if countdown:
+            self.count_down(60)
+        elif len(self.entry_txt) == len(self.text):
+            messagebox.showinfo("End", f"Yor CPM is {int((self.spelling_points * 60)/ int(self.timer_text['text']))}.")
 
     def count_score(self):
         pass
 
     def save_score(self):
         pass
-
-    def restart(self):
-        pass
+    #
+    # def restart(self):
+    #     self.window.after_cancel(self.time)
 
     def create_widgets(self):
-        self.canvas = Canvas(width=100, height=30, bg="#000000", highlightthickness=0)
         # timer
-        self.timer_text = self.canvas.create_text(10, 10, text="60", fill="white", font=("Arial", 12))
-        self.canvas.grid(column=1, row=0)
-        # seconds = StringVar()
-        # seconds.set("60")
+        # seconds = IntVar()
+        # seconds.set(60)
+        self.timer_text = Label(text="60", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.timer_text.grid(column=0, row=0)
         # characters per minute
         # words per minute
         # mistakes
@@ -144,16 +150,18 @@ class Screen:
         easy = Button(text="Easy Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_easy)
         easy.grid(column=0, row=1)
         hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
-        hard.grid(column=1, row=1)
+        hard.grid(column=3, row=1)
         # entry field
         entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
         entry_label.grid(column=0, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
         self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa")
-        self.entry_field.grid(column=0, row=6, columnspan=2)
+        self.entry_field.grid(column=0, row=6, columnspan=4)
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
+        restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
+                         command=lambda: [self.restart(), self.clear_screen()])
+        restart.grid(column=2, row=2)
         # exit button
-        pass
