@@ -28,6 +28,7 @@ class Screen:
         self.entry_txt = ""
         self.spelling = []
         self.spelling_points = 0
+        self.words_points = 0
 
         self.create_widgets()
         self.window.mainloop()
@@ -45,7 +46,7 @@ class Screen:
 
     def create_text_hard(self):
         self.clear_screen()
-        for word in range(9):
+        for word in range(10):
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.label = Label(self.window, text=f"{self.change_into_txt(self.set_of_words)}", fg="#fafafa", bg="#000000",
                            font=("Arial", 20, "bold"), wraplength=600)
@@ -90,6 +91,11 @@ class Screen:
             points = 0
         return points
 
+    # def count_words(self):
+    #     # if keyboard.read_key() == "space":
+    #     #     self.words_points += 1
+    #     pass
+
     def check_spelling(self):
         letters = []
         letters_string = ""
@@ -111,6 +117,7 @@ class Screen:
         print(self.spelling)
         print(letters_string)
         print(self.spelling_points)
+        print(self.words_points)
 
     def count_down(self, count):
         if count >= 0:
@@ -125,7 +132,8 @@ class Screen:
         if countdown:
             self.count_down(60)
         elif len(self.entry_txt) == len(self.text):
-            messagebox.showinfo("End", f"Yor CPM is {int((self.spelling_points * 60)/ int(self.timer_text['text']))}.")
+            messagebox.showinfo("End", f"Yor CPM is {int((self.spelling_points * 60)/ int(self.timer_text['text']))},"
+                                       f"your WPM is {int((self.words_points * 60) / int(self.timer_text['text']))}.")
 
     def count_score(self):
         pass
