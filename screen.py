@@ -21,7 +21,7 @@ class Screen:
         self.timer_text = None
         self.keyboard = True
         self.time = None
-        # self.countdown = False
+        self.points = 0
 
         self.set_of_words = []
         self.written_words = []
@@ -101,9 +101,11 @@ class Screen:
         letters = []
         letters_string = ""
         number = -1
+        self.points = 0
         try:
             for letter in self.entry_txt:
                 if letter != " ":
+                    self.points += 1
                     number += 1
                 else:
                     number = -1
@@ -141,17 +143,17 @@ class Screen:
             self.timer_text['text'] = count
         else:
             self.window.after_cancel(self.time)
-            messagebox.showinfo("End", f"Yor CPM is {int(self.spelling_points)},"
-                                       f" your WPM is {int(len(self.written_words))}.")
+            messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
+                                       f" your WPM is {int(self.points / 5)}.")
 
     def start_timer(self):
         countdown = len(self.entry_txt) == 1
         if countdown:
             self.count_down(60)
         elif len(self.entry_txt) == len(self.text):
-            messagebox.showinfo("End", f"Yor CPM is {int((self.spelling_points * 60)/ int(self.timer_text['text']))},"
+            messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
                                        f" your WPM is "
-                                       f"{int((len(self.written_words) * 60) / int(self.timer_text['text']))}.")
+                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}.")
 
     def count_score(self):
         pass
