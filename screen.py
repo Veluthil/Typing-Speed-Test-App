@@ -24,6 +24,7 @@ class Screen:
         # self.countdown = False
 
         self.set_of_words = []
+        self.written_words = []
         self.text = ""
         self.entry_txt = ""
         self.spelling = []
@@ -103,6 +104,8 @@ class Screen:
             for letter in self.entry_txt:
                 letters.append(letter)
                 letters_string = ''.join(letters)
+            self.written_words = letters_string.split(" ")
+            self.words_points = len(self.written_words)
             if keyboard.read_key() != "backspace":
                 if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
                     self.spelling.append("ok")
@@ -110,6 +113,12 @@ class Screen:
                 else:
                     self.spelling.append("wrong")
                     self.spelling_points = self.count_points()
+                # if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
+                #     self.spelling.append("ok")
+                #     self.spelling_points = self.count_points()
+                # else:
+                #     self.spelling.append("wrong")
+                #     self.spelling_points = self.count_points()
 
         except IndexError:
             pass
@@ -118,6 +127,7 @@ class Screen:
         print(letters_string)
         print(self.spelling_points)
         print(self.words_points)
+        print(self.written_words)
 
     def count_down(self, count):
         if count >= 0:
@@ -125,7 +135,8 @@ class Screen:
             self.timer_text['text'] = count
         else:
             self.window.after_cancel(self.time)
-            messagebox.showinfo("End", "End")
+            messagebox.showinfo("End", f"Yor CPM is {int(self.spelling_points)},"
+                                       f" your WPM is {int(len(self.written_words))}.")
 
     def start_timer(self):
         countdown = len(self.entry_txt) == 1
@@ -133,7 +144,8 @@ class Screen:
             self.count_down(60)
         elif len(self.entry_txt) == len(self.text):
             messagebox.showinfo("End", f"Yor CPM is {int((self.spelling_points * 60)/ int(self.timer_text['text']))},"
-                                       f"your WPM is {int((self.words_points * 60) / int(self.timer_text['text']))}.")
+                                       f" your WPM is "
+                                       f"{int((len(self.written_words) * 60) / int(self.timer_text['text']))}.")
 
     def count_score(self):
         pass
