@@ -113,12 +113,6 @@ class Screen:
                 else:
                     self.spelling.append("wrong")
                     self.spelling_points = self.count_points()
-                # if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
-                #     self.spelling.append("ok")
-                #     self.spelling_points = self.count_points()
-                # else:
-                #     self.spelling.append("wrong")
-                #     self.spelling_points = self.count_points()
 
         except IndexError:
             pass
