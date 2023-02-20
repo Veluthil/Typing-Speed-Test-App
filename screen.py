@@ -100,19 +100,31 @@ class Screen:
     def check_spelling(self):
         letters = []
         letters_string = ""
+        number = -1
         try:
             for letter in self.entry_txt:
+                if letter != " ":
+                    number += 1
+                else:
+                    number = -1
                 letters.append(letter)
                 letters_string = ''.join(letters)
             self.written_words = letters_string.split(" ")
             self.words_points = len(self.written_words)
             if keyboard.read_key() != "backspace":
-                if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
+                if self.written_words[self.words_points - 1][number] == \
+                        self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
                     self.spelling_points = self.count_points()
                 else:
                     self.spelling.append("wrong")
                     self.spelling_points = self.count_points()
+                # if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
+                #     self.spelling.append("ok")
+                #     self.spelling_points = self.count_points()
+                # else:
+                #     self.spelling.append("wrong")
+                #     self.spelling_points = self.count_points()
 
         except IndexError:
             pass
