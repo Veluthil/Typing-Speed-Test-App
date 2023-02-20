@@ -144,7 +144,9 @@ class Screen:
         else:
             self.window.after_cancel(self.time)
             messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
-                                       f" your WPM is {int(self.points / 5)}.")
+                                       f" your WPM is {int(self.points / 5)}."
+                                       f" Accuracy was "
+                                       f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
     def start_timer(self):
         countdown = len(self.entry_txt) == 1
@@ -153,7 +155,9 @@ class Screen:
         elif len(self.entry_txt) == len(self.text):
             messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
                                        f" your WPM is "
-                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}.")
+                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}."
+                                       f" Accuracy was "
+                                       f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
     def count_score(self):
         pass
