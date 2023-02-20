@@ -29,6 +29,7 @@ class Screen:
         self.entry_txt = ""
         self.spelling = []
         self.spelling_points = 0
+        self.mistakes = 0
         self.words_points = 0
 
         self.create_widgets()
@@ -92,6 +93,17 @@ class Screen:
             points = 0
         return points
 
+    def count_mistakes(self):
+        mistakes = 0
+        for check in self.spelling:
+            if check == "wrong":
+                mistakes += 1
+            else:
+                pass
+        if len(self.spelling) == 0:
+            mistakes = 0
+        return mistakes
+
     # def count_words(self):
     #     # if keyboard.read_key() == "space":
     #     #     self.words_points += 1
@@ -118,9 +130,11 @@ class Screen:
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
                     self.spelling_points = self.count_points()
+                    self.mistakes = self.count_mistakes()
                 else:
                     self.spelling.append("wrong")
                     self.spelling_points = self.count_points()
+                    self.mistakes = self.count_mistakes()
                 # if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
                 #     self.spelling.append("ok")
                 #     self.spelling_points = self.count_points()
@@ -144,7 +158,8 @@ class Screen:
         else:
             self.window.after_cancel(self.time)
             messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
-                                       f" your WPM is {int(self.points / 5)}."
+                                       f" your WPM is {int(self.points / 5)}, Net WPN is "
+                                       f"{int(self.points / 5) - self.mistakes}."
                                        f" Accuracy was "
                                        f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
@@ -153,9 +168,12 @@ class Screen:
         if countdown:
             self.count_down(60)
         elif len(self.entry_txt) == len(self.text):
+            net = int(((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60)) -
+                      (self.mistakes * ((60 - int(self.timer_text['text'])) / 60)))
             messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
                                        f" your WPM is "
-                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}."
+                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}, "
+                                       f"Net WPN is {net}."
                                        f" Accuracy was "
                                        f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
