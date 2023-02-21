@@ -229,9 +229,7 @@ class Screen:
         self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa")
         self.entry_field.grid(column=0, row=6, columnspan=4)
         self.entry_field.bind("<BackSpace>", self.backspace)
-
         # restart button
         restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
                          command=self.restart)
         restart.grid(column=2, row=10)
-        # exit button
