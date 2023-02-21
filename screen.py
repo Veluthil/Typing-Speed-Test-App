@@ -40,19 +40,21 @@ class Screen:
         with open("common_english_words.txt", "r") as text:
             all_text = text.read()
             words = list(map(str, all_text.split()))
-            for word in range(12):
+            for word in range(20):
                 self.set_of_words.append(random.choice(words))
-            self.label = Label(self.window, text=f"{self.change_into_txt(self.set_of_words).lower()}", fg="#fafafa",
-                               bg="#000000", font=("Arial", 20, "bold"), wraplength=600)
-            self.label.grid(column=0, row=2, rowspan=3, columnspan=2)
+            self.label = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
+                              height=4, width=50, wrap="word")
+            self.label.grid(column=0, row=2, rowspan=3, columnspan=4)
+            self.label.insert(END, self.change_into_txt(self.set_of_words).lower())
 
     def create_text_hard(self):
         self.clear_screen()
-        for word in range(10):
+        for word in range(20):
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
-        self.label = Label(self.window, text=f"{self.change_into_txt(self.set_of_words)}", fg="#fafafa", bg="#000000",
-                           font=("Arial", 20, "bold"), wraplength=600)
-        self.label.grid(column=0, row=2, rowspan=3, columnspan=2)
+        self.label = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
+                          height=5, width=50, wrap="word")
+        self.label.grid(column=0, row=2, rowspan=3, columnspan=4)
+        self.label.insert(END, self.change_into_txt(self.set_of_words))
 
     def change_into_txt(self, list_of_words):
         text = ' '.join(list_of_words)
@@ -157,10 +159,11 @@ class Screen:
             self.timer_text['text'] = count
         else:
             self.window.after_cancel(self.time)
-            messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
-                                       f" your WPM is {int(self.points / 5)}, Net WPN is "
-                                       f"{int(self.points / 5) - self.mistakes}."
-                                       f" Accuracy was "
+            messagebox.showinfo("End", f"Your CPM is {int(self.points)}.\n"
+                                       f"Your WPM is {int(self.points / 5)},\n"
+                                       f"Net WPN is "
+                                       f"{int(self.points / 5) - self.mistakes}.\n"
+                                       f"Accuracy was "
                                        f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
     def start_timer(self):
@@ -168,13 +171,13 @@ class Screen:
         if countdown:
             self.count_down(60)
         elif len(self.entry_txt) == len(self.text):
-            net = int(((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60)) -
-                      (self.mistakes * ((60 - int(self.timer_text['text'])) / 60)))
-            messagebox.showinfo("End", f"Yor CPM is {int(self.points)},"
-                                       f" your WPM is "
-                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))}, "
-                                       f"Net WPN is {net}."
-                                       f" Accuracy was "
+            net = (int(((self.points / 5) - (self.mistakes * ((60 - int(self.timer_text['text'])) / 60))) /
+                       ((60 - int(self.timer_text['text'])) / 60)))
+            messagebox.showinfo("End", f"Your CPM is {int(self.points)}.\n"
+                                       f"Your WPM is "
+                                       f"{int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))},\n"
+                                       f"Net WPN is {net}.\n"
+                                       f"Accuracy was "
                                        f"{'%.2f' % (self.spelling_points / len(self.text.replace(' ', '')) * 100)}%.")
 
     def count_score(self):
