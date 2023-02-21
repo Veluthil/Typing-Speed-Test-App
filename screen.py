@@ -22,6 +22,8 @@ class Screen:
         self.keyboard = True
         self.time = None
         self.points = 0
+        self.time_start = False
+        self.count = 0
 
         self.set_of_words = []
         self.written_words = []
@@ -113,18 +115,13 @@ class Screen:
     #     self.generated_text.tag_add("red", f"{self.set_of_words[self.words_points - 1][number]}")
     #     self.generated_text.configure(state="disabled")
 
-    # def count_words(self):
-    #     # if keyboard.read_key() == "space":
-    #     #     self.words_points += 1
-    #     pass
-
     def check_spelling(self):
         letters = []
         letters_string = ""
         number = -1
         self.points = 0
         try:
-            for letter in self.entry_txt:
+            for letter in self.entry_txt.lower():
                 if letter != " ":
                     self.points += 1
                     number += 1
@@ -135,6 +132,9 @@ class Screen:
             self.written_words = letters_string.split(" ")
             self.words_points = len(self.written_words)
             if keyboard.read_key() != "backspace":
+                if len(self.entry_txt) == len(self.text):
+                    self.count_score()
+                    self.time_start = False
                 if self.written_words[self.words_points - 1][number] == \
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
@@ -161,26 +161,35 @@ class Screen:
         print(self.words_points)
         print(self.written_words)
 
-    def count_down(self, count):
-        if count >= 0:
-            self.time = self.window.after(1000, self.count_down, count-1)
+    # def count_down(self, count):
+    #     if count >= 0:
+    #         self.time = self.window.after(1000, self.count_down, count-1)
+    #         self.timer_text['text'] = count
+    #     else:
+    #         self.window.after_cancel(self.time)
+    #         self.count_score()
+
+    def count_time(self, count):
+        if self.time_start:
+            self.time = self.window.after(1000, self.count_time, count + 1)
             self.timer_text['text'] = count
-        else:
-            self.window.after_cancel(self.time)
-            self.count_score()
 
     def start_timer(self):
-        countdown = len(self.entry_txt) == 1
-        if countdown:
-            self.count_down(60)
-        elif len(self.entry_txt) == len(self.text):
-            self.count_score()
+        if len(self.entry_txt) == 1:
+            self.time_start = True
+            self.count_time(0)
+    #     self.time_start = len(self.entry_txt) == 1
+    #     if len(self.entry_txt) == len(self.text):
+    #         self.count_score()
+    #     elif self.time_start:
+    #         self.count_down(60)
 
     def count_score(self):
+        self.time_start = False
         cpm = int(self.points)
-        wpm = int((self.points / 5) / ((60 - int(self.timer_text['text'])) / 60))
-        net_wpm = (int(((self.points / 5) - (self.mistakes * ((60 - int(self.timer_text['text'])) / 60))) /
-                       ((60 - int(self.timer_text['text'])) / 60)))
+        wpm = int((self.points / 5) / ((int(self.timer_text['text'])) / 60))
+        net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
+                       ((int(self.timer_text['text'])) / 60)))
         accuracy = (self.spelling_points / len(self.text.replace(' ', '')) * 100)
         messagebox.showinfo("End", f"Your CPM is {cpm}.\n"
                             f"Your WPM is "
@@ -191,15 +200,17 @@ class Screen:
 
     def save_score(self):
         pass
-    #
-    # def restart(self):
-    #     self.window.after_cancel(self.time)
+
+    def restart(self):
+        self.window.destroy()
+        self.window.after_cancel(self.time)
+        Screen()
+        # self.time_start = False
+        # self.clear_screen()
 
     def create_widgets(self):
         # timer
-        # seconds = IntVar()
-        # seconds.set(60)
-        self.timer_text = Label(text="60", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.timer_text = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
         self.timer_text.grid(column=0, row=0)
         # characters per minute
         # words per minute
@@ -220,7 +231,7 @@ class Screen:
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
-        # restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
-        #                  command=lambda: [self.restart(), self.clear_screen()])
-        # restart.grid(column=2, row=2)
+        restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
+                         command=self.restart)
+        restart.grid(column=2, row=10)
         # exit button
