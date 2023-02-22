@@ -1,10 +1,8 @@
-import time
 from tkinter import *
 from tkinter import messagebox
 from english_words import get_english_words_set
 import random
 import keyboard
-import math
 
 
 class Screen:
@@ -24,6 +22,7 @@ class Screen:
         self.points = 0
         self.time_start = False
         self.count = 0
+        self.high_score = 0
 
         self.set_of_words = []
         self.written_words = []
@@ -33,6 +32,11 @@ class Screen:
         self.spelling_points = 0
         self.mistakes = 0
         self.words_points = 0
+        self.net_wpm = 0
+
+        self.mist_value = Label()
+        self.wpm_value = Label()
+        self.cpm_value = Label()
 
         self.create_widgets()
         self.window.mainloop()
@@ -46,7 +50,7 @@ class Screen:
                 self.set_of_words.append(random.choice(words))
             self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
                                        height=4, width=50, wrap="word")
-            self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=4)
+            self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8)
             self.generated_text.insert(END, self.change_into_txt(self.set_of_words).lower())
 
     def create_text_hard(self):
@@ -55,7 +59,7 @@ class Screen:
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
                                    height=5, width=50, wrap="word")
-        self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=4)
+        self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8)
         self.generated_text.insert(END, self.change_into_txt(self.set_of_words))
 
     def change_into_txt(self, list_of_words):
@@ -76,6 +80,7 @@ class Screen:
         # print("Written {}".format(self.entry_field.get()))
         self.entry_txt = self.entry_field.get()
         self.check_spelling()
+        self.update_screen_board()
         self.start_timer()
 
     def backspace(self, event):
@@ -133,8 +138,8 @@ class Screen:
             self.words_points = len(self.written_words)
             if keyboard.read_key() != "backspace":
                 if len(self.entry_txt) == len(self.text):
-                    self.count_score()
                     self.time_start = False
+                    self.count_score()
                 if self.written_words[self.words_points - 1][number] == \
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
@@ -145,12 +150,6 @@ class Screen:
                     # self.show_mistake(number, keyboard.read_key())
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
-                # if letters_string[len(letters_string) - 1] == self.text[len(letters_string) - 1]:
-                #     self.spelling.append("ok")
-                #     self.spelling_points = self.count_points()
-                # else:
-                #     self.spelling.append("wrong")
-                #     self.spelling_points = self.count_points()
 
         except IndexError:
             pass
@@ -184,21 +183,30 @@ class Screen:
     #     elif self.time_start:
     #         self.count_down(60)
 
+    def update_screen_board(self):
+        self.cpm_value['text'] = self.points
+        if int(self.timer_text['text']) > 0:
+            self.net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
+                                ((int(self.timer_text['text'])) / 60)))
+            self.wpm_value['text'] = f"{int((self.points / 5) / ((int(self.timer_text['text'])) / 60))}/" \
+                                     f"{self.net_wpm}"
+        self.mist_value['text'] = self.mistakes
+
     def count_score(self):
         self.time_start = False
         cpm = int(self.points)
         wpm = int((self.points / 5) / ((int(self.timer_text['text'])) / 60))
-        net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
-                       ((int(self.timer_text['text'])) / 60)))
-        accuracy = (self.spelling_points / len(self.text.replace(' ', '')) * 100)
+        # accuracy = (self.spelling_points / len(self.text.replace(' ', '')) * 100)
+        accuracy = (self.net_wpm * 100) / wpm
         messagebox.showinfo("End", f"Your CPM is {cpm}.\n"
                             f"Your WPM is "
                             f"{wpm},\n"
-                            f"Net WPN is {net_wpm}.\n"
+                            f"Net WPN is {self.net_wpm}.\n"
                             f"Accuracy was "
                             f"{'%.2f' % accuracy}%.")
+        self.save_score(cpm, wpm, self.net_wpm, accuracy)
 
-    def save_score(self):
+    def save_score(self, cpm, wpm, net_wpm, accuracy):
         pass
 
     def restart(self):
@@ -210,24 +218,41 @@ class Screen:
 
     def create_widgets(self):
         # timer
+        timer_label = Label(text="Time:", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        timer_label.grid(column=0, row=1, sticky=E)
         self.timer_text = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
-        self.timer_text.grid(column=0, row=0)
+        self.timer_text.grid(column=1, row=1, sticky=W)
         # characters per minute
+        cpm_label = Label(text=f"CPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        cpm_label.grid(column=2, row=1, sticky=E)
+        self.cpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.cpm_value.grid(column=3, row=1, sticky=W)
         # words per minute
+        wpm_label = Label(text="WPM/Net WPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        wpm_label.grid(column=4, row=1, sticky=E)
+        self.wpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.wpm_value.grid(column=5, row=1, sticky=W)
         # mistakes
+        mist_label = Label(text="Mistakes: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        mist_label.grid(column=6, row=1, sticky=E)
+        self.mist_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.mist_value.grid(column=7, row=1, sticky=W)
         # current highest score
+        high_score_label = Label(text=f"High score: {self.high_score} Net WPM.", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        high_score_label.grid(column=8, row=0)
         # text label
         easy = Button(text="Easy Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_easy)
-        easy.grid(column=0, row=1)
+        easy.grid(column=0, row=0)
         hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
-        hard.grid(column=3, row=1)
+        hard.grid(column=1, row=0)
         # entry field
         entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
         entry_label.grid(column=0, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
-        self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa")
-        self.entry_field.grid(column=0, row=6, columnspan=4)
+        self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa",
+                                 font=("Arial", 12, "bold"))
+        self.entry_field.grid(column=0, row=6, columnspan=8)
         self.entry_field.bind("<BackSpace>", self.backspace)
         # restart button
         restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
