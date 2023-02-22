@@ -22,7 +22,8 @@ class Screen:
         self.points = 0
         self.time_start = False
         self.count = 0
-        self.high_score = 0
+        with open("data.txt") as data:
+            self.high_score = int(data.read())
 
         self.set_of_words = []
         self.written_words = []
@@ -77,7 +78,6 @@ class Screen:
         self.window.update()
 
     def text_callback(self, var, index, mode):
-        # print("Written {}".format(self.entry_field.get()))
         self.entry_txt = self.entry_field.get()
         self.check_spelling()
         self.update_screen_board()
@@ -160,14 +160,6 @@ class Screen:
         print(self.words_points)
         print(self.written_words)
 
-    # def count_down(self, count):
-    #     if count >= 0:
-    #         self.time = self.window.after(1000, self.count_down, count-1)
-    #         self.timer_text['text'] = count
-    #     else:
-    #         self.window.after_cancel(self.time)
-    #         self.count_score()
-
     def count_time(self, count):
         if self.time_start:
             self.time = self.window.after(1000, self.count_time, count + 1)
@@ -177,11 +169,6 @@ class Screen:
         if len(self.entry_txt) == 1:
             self.time_start = True
             self.count_time(0)
-    #     self.time_start = len(self.entry_txt) == 1
-    #     if len(self.entry_txt) == len(self.text):
-    #         self.count_score()
-    #     elif self.time_start:
-    #         self.count_down(60)
 
     def update_screen_board(self):
         self.cpm_value['text'] = self.points
@@ -196,7 +183,6 @@ class Screen:
         self.time_start = False
         cpm = int(self.points)
         wpm = int((self.points / 5) / ((int(self.timer_text['text'])) / 60))
-        # accuracy = (self.spelling_points / len(self.text.replace(' ', '')) * 100)
         accuracy = (self.net_wpm * 100) / wpm
         messagebox.showinfo("End", f"Your CPM is {cpm}.\n"
                             f"Your WPM is "
@@ -204,17 +190,18 @@ class Screen:
                             f"Net WPN is {self.net_wpm}.\n"
                             f"Accuracy was "
                             f"{'%.2f' % accuracy}%.")
-        self.save_score(cpm, wpm, self.net_wpm, accuracy)
+        self.save_score(self.net_wpm)
 
-    def save_score(self, cpm, wpm, net_wpm, accuracy):
-        pass
+    def save_score(self, net_wpn):
+        if self.net_wpm > self.high_score:
+            self.high_score = self.net_wpm
+            with open("data.txt", mode="w") as data:
+                data.write(f"{self.high_score}")
 
     def restart(self):
         self.window.destroy()
         self.window.after_cancel(self.time)
         Screen()
-        # self.time_start = False
-        # self.clear_screen()
 
     def create_widgets(self):
         # timer
@@ -222,29 +209,36 @@ class Screen:
         timer_label.grid(column=0, row=1, sticky=E)
         self.timer_text = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
         self.timer_text.grid(column=1, row=1, sticky=W)
+
         # characters per minute
         cpm_label = Label(text=f"CPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
         cpm_label.grid(column=2, row=1, sticky=E)
         self.cpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
         self.cpm_value.grid(column=3, row=1, sticky=W)
+
         # words per minute
         wpm_label = Label(text="WPM/Net WPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
         wpm_label.grid(column=4, row=1, sticky=E)
         self.wpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
         self.wpm_value.grid(column=5, row=1, sticky=W)
+
         # mistakes
         mist_label = Label(text="Mistakes: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
         mist_label.grid(column=6, row=1, sticky=E)
         self.mist_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
         self.mist_value.grid(column=7, row=1, sticky=W)
+
         # current highest score
-        high_score_label = Label(text=f"High score: {self.high_score} Net WPM.", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        high_score_label = Label(text=f"High score: {self.high_score} Net WPM.",
+                                 fg="#fafafa", bg="#000000", font=("Arial", 12))
         high_score_label.grid(column=8, row=0)
+
         # text label
         easy = Button(text="Easy Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_easy)
         easy.grid(column=0, row=0)
         hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
         hard.grid(column=1, row=0)
+
         # entry field
         entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
         entry_label.grid(column=0, row=5)
@@ -254,7 +248,8 @@ class Screen:
                                  font=("Arial", 12, "bold"))
         self.entry_field.grid(column=0, row=6, columnspan=8)
         self.entry_field.bind("<BackSpace>", self.backspace)
+
         # restart button
         restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
                          command=self.restart)
-        restart.grid(column=2, row=10)
+        restart.grid(column=8, row=6)
