@@ -51,7 +51,7 @@ class Screen:
                 self.set_of_words.append(random.choice(words))
             self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
                                        height=4, width=50, wrap="word")
-            self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8)
+            self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8, pady=15)
             self.generated_text.insert(END, self.change_into_txt(self.set_of_words).lower())
 
     def create_text_hard(self):
@@ -60,7 +60,7 @@ class Screen:
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
                                    height=5, width=50, wrap="word")
-        self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8)
+        self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8, pady=15)
         self.generated_text.insert(END, self.change_into_txt(self.set_of_words))
 
     def change_into_txt(self, list_of_words):
@@ -113,12 +113,20 @@ class Screen:
             mistakes = 0
         return mistakes
 
-    # def show_mistake(self, number, letter):
-    #     self.generated_text.configure(state="normal")
-    #     self.generated_text.delete(number, number)
-    #     self.generated_text.insert(number, number, letter)
-    #     self.generated_text.tag_add("red", f"{self.set_of_words[self.words_points - 1][number]}")
-    #     self.generated_text.configure(state="disabled")
+    def show_mistake(self, number):
+        self.generated_text.tag_config("#ff0000", foreground="#ff0000")
+        self.generated_text.delete(f"1.{len(self.entry_txt) - 1}", f"1.{len(self.entry_txt)}")
+        char = self.written_words[self.words_points - 1][number]
+        self.generated_text.insert(f"1.{len(self.entry_txt) - 1}", char)
+        self.generated_text.tag_add("#ff0000", f"1.{len(self.entry_txt) - 1}")
+
+    def show_correct(self, number):
+        self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
+        self.generated_text.delete(f"1.{len(self.entry_txt) - 1}", f"1.{len(self.entry_txt)}")
+        char = self.written_words[self.words_points - 1][number]
+        self.generated_text.insert(f"1.{len(self.entry_txt) - 1}", char)
+        self.generated_text.tag_add("#2AAA8A", f"1.{len(self.entry_txt) - 1}")
+        print(self.words_points)
 
     def check_spelling(self):
         letters = []
@@ -143,13 +151,25 @@ class Screen:
                 if self.written_words[self.words_points - 1][number] == \
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
+                    self.show_correct(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
+                elif len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
+                    number -= 1
+                    entry_len = len(self.entry_txt) - 1
+                    entry_len -= 1
                 else:
                     self.spelling.append("wrong")
-                    # self.show_mistake(number, keyboard.read_key())
+                    self.show_mistake(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
+            else:
+                self.generated_text.tag_config("#fafafa", foreground="#fafafa")
+                # self.generated_text.delete(f"1.{len(self.entry_txt)}", f"1.{len(self.entry_txt) + 1}")
+                char = self.text[self.words_points][number]
+                print(char)
+                self.generated_text.insert(f"1.{len(self.text) + 1}", char)
+                self.generated_text.tag_add("#fafafa", f"1.{len(self.text) + 1}")
 
         except IndexError:
             pass
@@ -178,6 +198,8 @@ class Screen:
             self.wpm_value['text'] = f"{int((self.points / 5) / ((int(self.timer_text['text'])) / 60))}/" \
                                      f"{self.net_wpm}"
         self.mist_value['text'] = self.mistakes
+        if int(self.mist_value['text']) > 0:
+            self.mist_value.config(fg="#ff0000")
 
     def count_score(self):
         self.time_start = False
@@ -199,9 +221,12 @@ class Screen:
                 data.write(f"{self.high_score}")
 
     def restart(self):
-        self.window.destroy()
-        self.window.after_cancel(self.time)
-        Screen()
+        try:
+            self.window.destroy()
+            self.window.after_cancel(self.time)
+            Screen()
+        except ValueError:
+            Screen()
 
     def create_widgets(self):
         # timer
@@ -230,23 +255,23 @@ class Screen:
 
         # current highest score
         high_score_label = Label(text=f"High score: {self.high_score} Net WPM.",
-                                 fg="#fafafa", bg="#000000", font=("Arial", 12))
+                                 fg="#fafafa", bg="#000000", font=("Arial", 12, "bold"))
         high_score_label.grid(column=8, row=0)
 
         # text label
         easy = Button(text="Easy Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_easy)
-        easy.grid(column=0, row=0)
+        easy.grid(column=0, row=0, padx=10, pady=20)
         hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
-        hard.grid(column=1, row=0)
+        hard.grid(column=1, row=0, padx=10, pady=20)
 
         # entry field
-        entry_label = Label(text="Write Below", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
+        entry_label = Label(text="Write Below:", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
         entry_label.grid(column=0, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
         self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa",
                                  font=("Arial", 12, "bold"))
-        self.entry_field.grid(column=0, row=6, columnspan=8)
+        self.entry_field.grid(column=0, row=6, columnspan=8, pady=15)
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
