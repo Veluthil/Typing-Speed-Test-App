@@ -154,10 +154,10 @@ class Screen:
                     self.show_correct(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
-                elif len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
-                    number -= 1
-                    entry_len = len(self.entry_txt) - 1
-                    entry_len -= 1
+                # elif len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
+                #     number -= 1
+                #     entry_len = len(self.entry_txt) - 1
+                #     entry_len -= 1
                 else:
                     self.spelling.append("wrong")
                     self.show_mistake(number)
