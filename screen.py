@@ -114,18 +114,24 @@ class Screen:
         return mistakes
 
     def show_mistake(self, number):
+        entry_len = len(self.entry_txt) - 1
+        # if len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
+        #     entry_len -= 1
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
-        self.generated_text.delete(f"1.{len(self.entry_txt) - 1}", f"1.{len(self.entry_txt)}")
-        char = self.written_words[self.words_points - 1][number]
-        self.generated_text.insert(f"1.{len(self.entry_txt) - 1}", char)
-        self.generated_text.tag_add("#ff0000", f"1.{len(self.entry_txt) - 1}")
+        self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
+        char = self.set_of_words[self.words_points - 1][number]
+        self.generated_text.insert(f"1.{entry_len}", char)
+        self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
     def show_correct(self, number):
+        entry_len = len(self.entry_txt) - 1
+        # if len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
+        #     entry_len -= 1
         self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
-        self.generated_text.delete(f"1.{len(self.entry_txt) - 1}", f"1.{len(self.entry_txt)}")
+        self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
         char = self.written_words[self.words_points - 1][number]
-        self.generated_text.insert(f"1.{len(self.entry_txt) - 1}", char)
-        self.generated_text.tag_add("#2AAA8A", f"1.{len(self.entry_txt) - 1}")
+        self.generated_text.insert(f"1.{entry_len}", char)
+        self.generated_text.tag_add("#2AAA8A", f"1.{entry_len}")
         print(self.words_points)
 
     def check_spelling(self):
@@ -156,20 +162,20 @@ class Screen:
                     self.mistakes = self.count_mistakes()
                 # elif len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
                 #     number -= 1
-                #     entry_len = len(self.entry_txt) - 1
-                #     entry_len -= 1
                 else:
                     self.spelling.append("wrong")
                     self.show_mistake(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
             else:
-                self.generated_text.tag_config("#fafafa", foreground="#fafafa")
-                # self.generated_text.delete(f"1.{len(self.entry_txt)}", f"1.{len(self.entry_txt) + 1}")
-                char = self.text[self.words_points][number]
-                print(char)
-                self.generated_text.insert(f"1.{len(self.text) + 1}", char)
-                self.generated_text.tag_add("#fafafa", f"1.{len(self.text) + 1}")
+                pass
+                # number -= 1
+                # self.generated_text.tag_config("#fafafa", foreground="#fafafa")
+                # # self.generated_text.delete(f"1.{len(self.entry_txt)}", f"1.{len(self.entry_txt) + 1}")
+                # char = self.text[self.words_points][number]
+                # print(char)
+                # self.generated_text.insert(f"1.{len(self.text) + 1}", char)
+                # self.generated_text.tag_add("#fafafa", f"1.{len(self.text) + 1}")
 
         except IndexError:
             pass
