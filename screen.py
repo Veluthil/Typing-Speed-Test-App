@@ -48,7 +48,7 @@ class Screen:
             all_text = text.read()
             words = list(map(str, all_text.split()))
             for word in range(20):
-                self.set_of_words.append(random.choice(words))
+                self.set_of_words.append(random.choice(words).lower())
             self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
                                        height=4, width=50, wrap="word")
             self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8, pady=15)
@@ -115,8 +115,6 @@ class Screen:
 
     def show_mistake(self, number):
         entry_len = len(self.entry_txt) - 1
-        # if len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
-        #     entry_len -= 1
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
         char = self.set_of_words[self.words_points - 1][number]
@@ -125,8 +123,6 @@ class Screen:
 
     def show_correct(self, number):
         entry_len = len(self.entry_txt) - 1
-        # if len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
-        #     entry_len -= 1
         self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
         char = self.written_words[self.words_points - 1][number]
@@ -160,22 +156,18 @@ class Screen:
                     self.show_correct(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
-                # elif len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
-                #     number -= 1
                 else:
                     self.spelling.append("wrong")
                     self.show_mistake(number)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
             else:
-                pass
-                # number -= 1
-                # self.generated_text.tag_config("#fafafa", foreground="#fafafa")
-                # # self.generated_text.delete(f"1.{len(self.entry_txt)}", f"1.{len(self.entry_txt) + 1}")
-                # char = self.text[self.words_points][number]
-                # print(char)
-                # self.generated_text.insert(f"1.{len(self.text) + 1}", char)
-                # self.generated_text.tag_add("#fafafa", f"1.{len(self.text) + 1}")
+                self.generated_text.tag_config("#fafafa", foreground="#fafafa")
+                self.generated_text.delete(f"1.{len(self.entry_txt)}")
+                char = self.set_of_words[self.words_points - 1][number + 1]
+                print(char)
+                self.generated_text.insert(f"1.{len(self.entry_txt)}", char)
+                self.generated_text.tag_add("#fafafa", f"1.{len(self.entry_txt)}")
 
         except IndexError:
             pass
