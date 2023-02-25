@@ -147,6 +147,13 @@ class Screen:
             self.written_words = letters_string.split(" ")
             self.words_points = len(self.written_words)
             if keyboard.read_key() != "backspace":
+                # for word, word2 in list(zip(self.set_of_words, self.written_words)):
+                #     difference = len(word2) - len(word)
+                #     if difference > 0:
+                #         self.written_words.pop()
+                #         self.written_words.append(word2[:-difference])
+                #     else:
+                #         pass
                 if len(self.entry_txt) == len(self.text):
                     self.time_start = False
                     self.count_score()
@@ -163,9 +170,11 @@ class Screen:
                     self.mistakes = self.count_mistakes()
             else:
                 self.generated_text.tag_config("#fafafa", foreground="#fafafa")
+                string_char = " ".join(self.set_of_words)
+                char = string_char[len(self.entry_txt)]
                 self.generated_text.delete(f"1.{len(self.entry_txt)}")
-                char = self.set_of_words[self.words_points - 1][number + 1]
-                print(char)
+                # char = self.set_of_words[self.words_points - 1][number + 1]
+                # print(char)
                 self.generated_text.insert(f"1.{len(self.entry_txt)}", char)
                 self.generated_text.tag_add("#fafafa", f"1.{len(self.entry_txt)}")
 
