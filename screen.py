@@ -113,22 +113,30 @@ class Screen:
             mistakes = 0
         return mistakes
 
-    def show_mistake(self, number):
+    def show_mistake(self):
         entry_len = len(self.entry_txt) - 1
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
+        char = self.entry_txt[len(self.entry_txt) - 1]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
-        char = self.set_of_words[self.words_points - 1][number]
+        # char = self.set_of_words[self.words_points - 1][number]
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
-    def show_correct(self, number):
+    def show_correct(self):
         entry_len = len(self.entry_txt) - 1
         self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
+        char = self.text[len(self.entry_txt) - 1]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
-        char = self.written_words[self.words_points - 1][number]
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#2AAA8A", f"1.{entry_len}")
         print(self.words_points)
+
+    def show_original_letter(self):
+        self.generated_text.tag_config("#fafafa", foreground="#fafafa")
+        char = self.text[len(self.entry_txt)]
+        self.generated_text.delete(f"1.{len(self.entry_txt)}")
+        self.generated_text.insert(f"1.{len(self.entry_txt)}", char)
+        self.generated_text.tag_add("#fafafa", f"1.{len(self.entry_txt)}")
 
     def check_spelling(self):
         letters = []
@@ -160,23 +168,16 @@ class Screen:
                 if self.written_words[self.words_points - 1][number] == \
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
-                    self.show_correct(number)
+                    self.show_correct()
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
                 else:
                     self.spelling.append("wrong")
-                    self.show_mistake(number)
+                    self.show_mistake()
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
             else:
-                self.generated_text.tag_config("#fafafa", foreground="#fafafa")
-                string_char = " ".join(self.set_of_words)
-                char = string_char[len(self.entry_txt)]
-                self.generated_text.delete(f"1.{len(self.entry_txt)}")
-                # char = self.set_of_words[self.words_points - 1][number + 1]
-                # print(char)
-                self.generated_text.insert(f"1.{len(self.entry_txt)}", char)
-                self.generated_text.tag_add("#fafafa", f"1.{len(self.entry_txt)}")
+                self.show_original_letter()
 
         except IndexError:
             pass
@@ -212,11 +213,13 @@ class Screen:
         self.time_start = False
         cpm = int(self.points)
         wpm = int((self.points / 5) / ((int(self.timer_text['text'])) / 60))
-        accuracy = (self.net_wpm * 100) / wpm
+        net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
+                                ((int(self.timer_text['text'])) / 60)))
+        accuracy = (net_wpm * 100) / wpm
         messagebox.showinfo("End", f"Your CPM is {cpm}.\n"
                             f"Your WPM is "
                             f"{wpm},\n"
-                            f"Net WPN is {self.net_wpm}.\n"
+                            f"Net WPN is {net_wpm}.\n"
                             f"Accuracy was "
                             f"{'%.2f' % accuracy}%.")
         self.save_score(self.net_wpm)
