@@ -118,7 +118,6 @@ class Screen:
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
         char = self.entry_txt[len(self.entry_txt) - 1]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
-        # char = self.set_of_words[self.words_points - 1][number]
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
