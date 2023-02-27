@@ -34,6 +34,7 @@ class Screen:
         self.mistakes = 0
         self.words_points = 0
         self.net_wpm = 0
+        self.difference = 0
 
         self.mist_value = Label()
         self.wpm_value = Label()
@@ -113,22 +114,22 @@ class Screen:
             mistakes = 0
         return mistakes
 
-    def show_mistake(self):
-        entry_len = len(self.entry_txt) - 1
+    def show_mistake(self, difference):
+        entry_len = len(self.entry_txt) - 1 - difference
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
-        char = self.entry_txt[len(self.entry_txt) - 1]
+        char = self.entry_txt[len(self.entry_txt) - 1 - difference]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
+        # char = self.set_of_words[self.words_points - 1][number]
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
-    def show_correct(self):
-        entry_len = len(self.entry_txt) - 1
+    def show_correct(self, difference):
+        entry_len = len(self.entry_txt) - 1 - difference
         self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
-        char = self.text[len(self.entry_txt) - 1]
+        char = self.text[len(self.entry_txt) - 1 - difference]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#2AAA8A", f"1.{entry_len}")
-        print(self.words_points)
 
     def show_original_letter(self):
         self.generated_text.tag_config("#fafafa", foreground="#fafafa")
@@ -141,6 +142,7 @@ class Screen:
         letters = []
         letters_string = ""
         number = -1
+        word = 0
         self.points = 0
         try:
             for letter in self.entry_txt.lower():
@@ -148,11 +150,19 @@ class Screen:
                     self.points += 1
                     number += 1
                 else:
+                    word += 1
                     number = -1
+                    # if len(self.written_words[word - 1]) < len(self.set_of_words[word - 1]):
+                    #     self.difference = len(self.written_words[word - 1]) - len(self.set_of_words[word - 1])
                 letters.append(letter)
                 letters_string = ''.join(letters)
             self.written_words = letters_string.split(" ")
             self.words_points = len(self.written_words)
+            if len(self.written_words[word]) > len(self.set_of_words[word]):
+                number -= 1
+                self.difference = len(self.written_words[word]) - len(self.set_of_words[word])
+                self.written_words.pop()
+                self.written_words.append(self.written_words[word][:-self.difference])
             if keyboard.read_key() != "backspace":
                 # for word, word2 in list(zip(self.set_of_words, self.written_words)):
                 #     difference = len(word2) - len(word)
@@ -167,12 +177,12 @@ class Screen:
                 if self.written_words[self.words_points - 1][number] == \
                         self.set_of_words[self.words_points - 1][number]:
                     self.spelling.append("ok")
-                    self.show_correct()
+                    self.show_correct(self.difference)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
                 else:
                     self.spelling.append("wrong")
-                    self.show_mistake()
+                    self.show_mistake(self.difference)
                     self.spelling_points = self.count_points()
                     self.mistakes = self.count_mistakes()
             else:
@@ -207,6 +217,8 @@ class Screen:
         self.mist_value['text'] = self.mistakes
         if int(self.mist_value['text']) > 0:
             self.mist_value.config(fg="#ff0000")
+        elif int(self.mist_value['text']) == 0:
+            self.mist_value.config(fg="#fafafa")
 
     def count_score(self):
         self.time_start = False
