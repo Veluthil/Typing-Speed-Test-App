@@ -164,13 +164,6 @@ class Screen:
                 self.written_words.pop()
                 self.written_words.append(self.written_words[word][:-self.difference])
             if keyboard.read_key() != "backspace":
-                # for word, word2 in list(zip(self.set_of_words, self.written_words)):
-                #     difference = len(word2) - len(word)
-                #     if difference > 0:
-                #         self.written_words.pop()
-                #         self.written_words.append(word2[:-difference])
-                #     else:
-                #         pass
                 if len(self.entry_txt) == len(self.text):
                     self.time_start = False
                     self.count_score()
@@ -206,6 +199,8 @@ class Screen:
         if len(self.entry_txt) == 1:
             self.time_start = True
             self.count_time(0)
+        elif len(self.entry_txt) == 0:
+            self.time_start = False
 
     def update_screen_board(self):
         self.cpm_value['text'] = self.points
