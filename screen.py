@@ -35,7 +35,6 @@ class Screen:
         self.words_points = 0
         self.net_wpm = 0
         self.difference = 0
-        self.lack = 0
 
         self.mist_value = Label()
         self.wpm_value = Label()
