@@ -35,6 +35,7 @@ class Screen:
         self.words_points = 0
         self.net_wpm = 0
         self.difference = 0
+        self.lack = 0
 
         self.mist_value = Label()
         self.wpm_value = Label()
@@ -153,7 +154,7 @@ class Screen:
                     word += 1
                     number = -1
                     # if len(self.written_words[word - 1]) < len(self.set_of_words[word - 1]):
-                    #     self.difference = len(self.written_words[word - 1]) - len(self.set_of_words[word - 1])
+                    #     self.lack = len(self.set_of_words[word - 1]) - len(self.written_words[word - 1])
                 letters.append(letter)
                 letters_string = ''.join(letters)
             self.written_words = letters_string.split(" ")
