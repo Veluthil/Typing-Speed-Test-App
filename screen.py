@@ -13,6 +13,9 @@ class Screen:
         self.window.minsize(150, 150)
         self.window.config(padx=30, pady=10, bg="#000000")
 
+        self.easy = Button()
+        self.hard = Button()
+        self.difficulty_label = Label()
         self.generated_text = Text()
         self.entry_field = Entry()
         self.entry = Entry()
@@ -40,11 +43,22 @@ class Screen:
         self.wpm_value = Label()
         self.cpm_value = Label()
 
-        self.create_widgets()
+        self.choose_difficulty()
         self.window.mainloop()
+
+    def choose_difficulty(self):
+        self.difficulty_label = Label(text="CHOOSE A DIFFICULTY", font=("Tahoma", 20, "bold"), bg="#000000", fg="#fafafa")
+        self.difficulty_label.grid(column=0, row=0, columnspan=2, padx=50, pady=50)
+        self.easy = Button(text="EASY", font=("Tahoma", 12, "bold"), bg="#000000", fg="#fafafa",
+                           command=self.create_text_easy)
+        self.easy.grid(column=0, row=1, padx=20, pady=20)
+        self.hard = Button(text="HARD", font=("Tahoma", 12, "bold"), bg="#000000", fg="#fafafa",
+                           command=self.create_text_hard)
+        self.hard.grid(column=1, row=1, padx=20, pady=20)
 
     def create_text_easy(self):
         self.clear_screen()
+        self.create_widgets()
         with open("common_english_words.txt", "r") as text:
             all_text = text.read()
             words = list(map(str, all_text.split()))
@@ -57,6 +71,7 @@ class Screen:
 
     def create_text_hard(self):
         self.clear_screen()
+        self.create_widgets()
         for word in range(20):
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
@@ -70,8 +85,11 @@ class Screen:
         return text
 
     def clear_screen(self):
+        self.difficulty_label.destroy()
         self.set_of_words.clear()
         self.text = ""
+        self.easy.destroy()
+        self.hard.destroy()
         self.generated_text.destroy()
         self.spelling.clear()
         self.entry_field.delete(0, END)
@@ -184,11 +202,11 @@ class Screen:
         except IndexError:
             pass
 
-        print(self.spelling)
-        print(letters_string)
-        print(self.spelling_points)
-        print(self.words_points)
-        print(self.written_words)
+        # print(self.spelling)
+        # print(letters_string)
+        # print(self.spelling_points)
+        # print(self.words_points)
+        # print(self.written_words)
 
     def count_time(self, count):
         if self.time_start:
@@ -246,42 +264,36 @@ class Screen:
 
     def create_widgets(self):
         # timer
-        timer_label = Label(text="Time:", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        timer_label = Label(text="TIME:", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         timer_label.grid(column=0, row=1, sticky=E)
-        self.timer_text = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.timer_text = Label(text="0", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         self.timer_text.grid(column=1, row=1, sticky=W)
 
         # characters per minute
-        cpm_label = Label(text=f"CPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        cpm_label = Label(text=f"CPM: ", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         cpm_label.grid(column=2, row=1, sticky=E)
-        self.cpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.cpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         self.cpm_value.grid(column=3, row=1, sticky=W)
 
         # words per minute
-        wpm_label = Label(text="WPM/Net WPM: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        wpm_label = Label(text="WPM/NET WPM: ", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         wpm_label.grid(column=4, row=1, sticky=E)
-        self.wpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.wpm_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         self.wpm_value.grid(column=5, row=1, sticky=W)
 
         # mistakes
-        mist_label = Label(text="Mistakes: ", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        mist_label = Label(text="MISTAKES: ", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         mist_label.grid(column=6, row=1, sticky=E)
-        self.mist_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Arial", 12))
+        self.mist_value = Label(text="0", fg="#fafafa", bg="#000000", font=("Tahoma", 12))
         self.mist_value.grid(column=7, row=1, sticky=W)
 
         # current highest score
-        high_score_label = Label(text=f"High score: {self.high_score} Net WPM.",
-                                 fg="#fafafa", bg="#000000", font=("Arial", 12, "bold"))
+        high_score_label = Label(text=f"HIGH SCORE: {self.high_score} NET WPM.",
+                                 fg="#fafafa", bg="#000000", font=("Tahoma", 12, "bold"))
         high_score_label.grid(column=8, row=0)
 
-        # text label
-        easy = Button(text="Easy Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_easy)
-        easy.grid(column=0, row=0, padx=10, pady=20)
-        hard = Button(text="Hard Mode", font=("Arial", 12), bg="#000000", fg="#fafafa", command=self.create_text_hard)
-        hard.grid(column=1, row=0, padx=10, pady=20)
-
         # entry field
-        entry_label = Label(text="Write Below:", width=15, bg="#000000", fg="#fafafa", font=("Arial", 12, "bold"))
+        entry_label = Label(text="WRITE BELOW:", width=15, bg="#000000", fg="#fafafa", font=("Tahoma", 12, "bold"))
         entry_label.grid(column=0, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
@@ -291,6 +303,6 @@ class Screen:
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
-        restart = Button(text="Restart", font=("Arial", 12), bg="#000000", fg="#fafafa",
+        restart = Button(text="RESTART", font=("Tahoma", 12, "bold"), bg="#000000", fg="#fafafa",
                          command=self.restart)
         restart.grid(column=8, row=6)
