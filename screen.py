@@ -13,9 +13,6 @@ class Screen:
         self.window.minsize(150, 150)
         self.window.config(padx=30, pady=10, bg="#000000")
 
-        self.easy = Button()
-        self.hard = Button()
-        self.info = Button()
         self.difficulty_label = Label()
         self.generated_text = Text()
         self.entry_field = Entry()
@@ -44,15 +41,6 @@ class Screen:
         self.wpm_value = Label()
         self.cpm_value = Label()
 
-        # messagebox.showinfo("Welcome in Typing Speed Test App",
-        #                     "This app allows you to check your typing speed.\n"
-        #                     "First, choose a difficulty.\n"
-        #                     "Then, you will be prompted with randomly chosen words of given difficulty.\n"
-        #                     "Once you start typing, the timer will start.\n"
-        #                     "Only after rewriting the whole text the test will be over and your results will be "
-        #                     "provided to you.\n"
-        #                     "Each mistake is counted, but it is allowed to fix them without points penalty.\n"
-        #                     "After each written word you must type a single space.")
         self.choose_difficulty()
         self.window.mainloop()
 
@@ -60,31 +48,32 @@ class Screen:
         self.difficulty_label = Label(text="CHOOSE A DIFFICULTY", font=("Tahoma", 25, "bold"), bg="#000000",
                                       fg="#fafafa")
         self.difficulty_label.grid(column=0, row=0, columnspan=3, padx=50, pady=20)
-        self.easy = Button(text="EASY", font=("Tahoma", 20, "bold"), bg="#000000", fg="#2AAA8A",
-                           command=self.create_text_easy)
-        self.easy.grid(column=0, row=1, padx=20, pady=20)
-        self.hard = Button(text="HARD", font=("Tahoma", 20, "bold"), bg="#000000", fg="#ff0000",
-                           command=self.create_text_hard)
-        self.hard.grid(column=2, row=1, padx=20, pady=20)
-        self.info = Button(text="INSTRUCTION", font=("Tahoma", 8, "bold"), bg="#000000", fg="#767676",
-                           command=lambda: [self.show_info(), self.info.destroy()])
-        self.info.grid(column=1, row=2)
+        easy = Button(text="EASY", font=("Tahoma", 20, "bold"), bg="#000000", fg="#2AAA8A",
+                           command=lambda: [self.create_text_easy(), easy.destroy(), hard.destroy()])
+        easy.grid(column=0, row=1, padx=20, pady=20)
+        hard = Button(text="HARD", font=("Tahoma", 20, "bold"), bg="#000000", fg="#ff0000",
+                           command=lambda: [self.create_text_hard(), easy.destroy(), hard.destroy()])
+        hard.grid(column=2, row=1, padx=20, pady=20)
+        info = Button(text="INSTRUCTION", font=("Tahoma", 8, "bold"), bg="#000000", fg="#767676",
+                           command=lambda: [self.show_info(), info.destroy(), easy.destroy(), hard.destroy()])
+        info.grid(column=1, row=2)
 
     def show_info(self):
-        self.easy.destroy()
-        self.hard.destroy()
-        self.difficulty_label.config(text="Welcome in Typing Speed Test App")
-        info_text = Label(font=("Tahoma", 14), bg="#000000", fg="#fafafa", anchor=W,
+        self.difficulty_label.config(text="Welcome in the Typing Speed Test App")
+        info_text = Label(font=("Tahoma", 14), bg="#000000", fg="#fafafa",
                           text="This app allows you to check your typing speed. \n"
                                "First, choose a difficulty. \n"
                                "Then, the randomly chosen words of a given difficulty will appear. \n"
                                "Once you start typing, the timer will start. \n"
-                               "After each word, type a SINGLE SPACE. After rewriting the whole text, \n"
-                               "the test will end, and the app will count and provide you with the final results. \n"
+                               "After each word, type a SINGLE SPACE. \n"
+                               "After rewriting the whole text, the test will end, and the app will count \n"
+                               "and provide you with the final results. \n"
                                "Each mistake counts, but you can fix them without a points penalty. \n"
-                               "The application automatically saves the highest score. \nGOOD LUCK!")
+                               "The application automatically saves the highest score. \nGOOD LUCK!\n"
+                               "LEGEND: WPM - Words Per Minute, CPM - Characters Per Minute, \n"
+                               "NET WPN - WPN with counted mistakes.")
         info_text.grid(column=0, row=1, pady=20)
-        back = Button(text="GO BACK", font=("Tahoma", 10, "bold"), bg="#000000", fg="#fafafa",
+        back = Button(text="GO BACK", font=("Tahoma", 15, "bold"), bg="#000000", fg="#fafafa",
                       command=lambda: [self.clear_screen(),
                                        self.choose_difficulty(),
                                        info_text.destroy(), back.destroy(),
@@ -123,9 +112,6 @@ class Screen:
         self.difficulty_label.destroy()
         self.set_of_words.clear()
         self.text = ""
-        self.easy.destroy()
-        self.hard.destroy()
-        self.info.destroy()
         self.generated_text.destroy()
         self.spelling.clear()
         self.entry_field.delete(0, END)
@@ -276,8 +262,8 @@ class Screen:
         net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
                        ((int(self.timer_text['text'])) / 60)))
         accuracy = (net_wpm * 100) / wpm
-        messagebox.showinfo("End", f"Your CPM is {cpm}.\n"
-                                   f"Your WPM is "
+        messagebox.showinfo("End", f"CPM is {cpm}.\n"
+                                   f"WPM is "
                                    f"{wpm},\n"
                                    f"Net WPN is {net_wpm}.\n"
                                    f"Accuracy was "
