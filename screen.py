@@ -50,17 +50,17 @@ class Screen:
         self.difficulty_label.grid(column=0, row=0, columnspan=3, padx=50, pady=20)
         easy = Button(text="EASY", font=("Tahoma", 20, "bold"), bg="#000000", fg="#2AAA8A",
                            command=lambda: [self.create_text_easy(), easy.destroy(), hard.destroy()])
-        easy.grid(column=0, row=1, padx=20, pady=20)
+        easy.grid(column=0, row=2, padx=20, pady=20)
         hard = Button(text="HARD", font=("Tahoma", 20, "bold"), bg="#000000", fg="#ff0000",
                            command=lambda: [self.create_text_hard(), easy.destroy(), hard.destroy()])
-        hard.grid(column=2, row=1, padx=20, pady=20)
+        hard.grid(column=2, row=2, padx=20, pady=20)
         info = Button(text="INSTRUCTION", font=("Tahoma", 8, "bold"), bg="#000000", fg="#767676",
                            command=lambda: [self.show_info(), info.destroy(), easy.destroy(), hard.destroy()])
-        info.grid(column=1, row=2)
+        info.grid(column=1, row=1)
 
     def show_info(self):
-        self.difficulty_label.config(text="Welcome in the Typing Speed Test App")
-        info_text = Label(font=("Tahoma", 14), bg="#000000", fg="#fafafa",
+        self.difficulty_label.config(text="Welcome in the Typing Speed Test!")
+        info_text = Label(font=("Tahoma", 15), bg="#000000", fg="#fafafa", anchor=W, justify="left",
                           text="This app allows you to check your typing speed. \n"
                                "First, choose a difficulty. \n"
                                "Then, the randomly chosen words of a given difficulty will appear. \n"
@@ -69,16 +69,19 @@ class Screen:
                                "After rewriting the whole text, the test will end, and the app will count \n"
                                "and provide you with the final results. \n"
                                "Each mistake counts, but you can fix them without a points penalty. \n"
-                               "The application automatically saves the highest score. \nGOOD LUCK!\n"
+                               "The application automatically saves the highest score. \n"
                                "LEGEND: WPM - Words Per Minute, CPM - Characters Per Minute, \n"
                                "NET WPN - WPN with counted mistakes.")
         info_text.grid(column=0, row=1, pady=20)
+        good_luck = Label(font=("Tahoma", 18, "bold"), bg="#000000", fg="#fafafa",
+                          text="GOOD LUCK!")
+        good_luck.grid(column=0, row=2, pady=20, padx=15)
         back = Button(text="GO BACK", font=("Tahoma", 15, "bold"), bg="#000000", fg="#fafafa",
                       command=lambda: [self.clear_screen(),
                                        self.choose_difficulty(),
-                                       info_text.destroy(), back.destroy(),
+                                       info_text.destroy(), back.destroy(), good_luck.destroy(),
                                        self.difficulty_label.config(text="CHOOSE A DIFFICULTY")])
-        back.grid(column=0, row=2)
+        back.grid(column=0, row=3)
 
     def create_text_easy(self):
         self.clear_screen()
