@@ -49,10 +49,10 @@ class Screen:
                                       fg="#fafafa")
         self.difficulty_label.grid(column=0, row=0, columnspan=3, padx=50, pady=20)
         easy = Button(text="EASY", font=("Tahoma", 20, "bold"), bg="#000000", fg="#2AAA8A",
-                           command=lambda: [self.create_text_easy(), easy.destroy(), hard.destroy()])
+                           command=lambda: [self.create_text_easy(), easy.destroy(), hard.destroy(), info.destroy()])
         easy.grid(column=0, row=2, padx=20, pady=20)
         hard = Button(text="HARD", font=("Tahoma", 20, "bold"), bg="#000000", fg="#ff0000",
-                           command=lambda: [self.create_text_hard(), easy.destroy(), hard.destroy()])
+                           command=lambda: [self.create_text_hard(), easy.destroy(), hard.destroy(), info.destroy()])
         hard.grid(column=2, row=2, padx=20, pady=20)
         info = Button(text="INSTRUCTION", font=("Tahoma", 8, "bold"), bg="#000000", fg="#767676",
                            command=lambda: [self.show_info(), info.destroy(), easy.destroy(), hard.destroy()])
