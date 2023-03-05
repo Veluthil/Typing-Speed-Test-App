@@ -168,7 +168,6 @@ class Screen:
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
         char = self.entry_txt[len(self.entry_txt) - 1 - difference]
         self.generated_text.delete(f"1.{entry_len}", f"1.{entry_len + 1}")
-        # char = self.set_of_words[self.words_points - 1][number]
         self.generated_text.insert(f"1.{entry_len}", char)
         self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
@@ -196,7 +195,6 @@ class Screen:
         letters = []
         letters_string = ""
         number = -1
-        word = 0
         self.points = 0
         try:
             for letter in self.entry_txt.lower():
@@ -204,20 +202,21 @@ class Screen:
                     self.points += 1
                     number += 1
                 else:
-                    word += 1
                     number = -1
-                    # if len(self.written_words[word - 1]) < len(self.set_of_words[word - 1]):
-                    #     self.lack = len(self.set_of_words[word - 1]) - len(self.written_words[word - 1])
-                        # self.sum_of_lack += self.lack
+                    # if len(self.written_words[self.words_points - 2]) < len(self.set_of_words[self.words_points - 2]):
+                    #     self.lack = len(self.set_of_words[self.words_points - 2]) \
+                    #                 - len(self.written_words[self.words_points - 2])
+                    #     self.sum_of_lack += self.lack
                 letters.append(letter)
                 letters_string = ''.join(letters)
             self.written_words = letters_string.split(" ")
             self.words_points = len(self.written_words)
-            if len(self.written_words[word]) > len(self.set_of_words[word]):
+            if len(self.written_words[self.words_points - 1]) > len(self.set_of_words[self.words_points - 1]):
                 number -= 1
-                self.difference = len(self.written_words[word]) - len(self.set_of_words[word])
+                self.difference = len(self.written_words[self.words_points - 1]) \
+                                  - len(self.set_of_words[self.words_points - 1])
                 self.written_words.pop()
-                self.written_words.append(self.written_words[word][:-self.difference])
+                self.written_words.append(self.written_words[self.words_points - 1][:-self.difference])
             if keyboard.read_key() != "backspace":
                 if len(self.entry_txt) == len(self.text):
                     self.time_start = False
@@ -238,12 +237,6 @@ class Screen:
 
         except IndexError:
             pass
-
-        # print(self.spelling)
-        # print(letters_string)
-        # print(self.spelling_points)
-        # print(self.words_points)
-        # print(self.written_words)
 
     def count_time(self, count):
         """Adds seconds to the timer and updates time on the Screen."""
