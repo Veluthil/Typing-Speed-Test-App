@@ -18,11 +18,9 @@ class Screen:
         self.entry_field = Entry()
         self.entry = Entry()
         self.timer_text = None
-        self.keyboard = True
         self.time = None
         self.points = 0
         self.time_start = False
-        self.count = 0
         with open("data.txt") as data:
             self.high_score = int(data.read())
 
@@ -36,6 +34,8 @@ class Screen:
         self.words_points = 0
         self.net_wpm = 0
         self.difference = 0
+        self.lack = 0
+        self.sum_of_lack = 0
 
         self.mist_value = Label()
         self.wpm_value = Label()
@@ -45,6 +45,7 @@ class Screen:
         self.window.mainloop()
 
     def choose_difficulty(self):
+        """Starting screen that allows to choose difficulty or show the instruction."""
         self.difficulty_label = Label(text="CHOOSE A DIFFICULTY", font=("Tahoma", 25, "bold"), bg="#000000",
                                       fg="#fafafa")
         self.difficulty_label.grid(column=0, row=0, columnspan=3, padx=50, pady=20)
@@ -59,6 +60,7 @@ class Screen:
         info.grid(column=1, row=1)
 
     def show_info(self):
+        """Shows instruction to the application. When closed shows starting screen again."""
         self.difficulty_label.config(text="Welcome in the Typing Speed Test!")
         info_text = Label(font=("Tahoma", 15), bg="#000000", fg="#fafafa", anchor=W, justify="left",
                           text="This app allows you to check your typing speed. \n"
@@ -84,6 +86,7 @@ class Screen:
         back.grid(column=0, row=3)
 
     def create_text_easy(self):
+        """Creates sample of 20 words randomly chosen from common_english_words.txt."""
         self.clear_screen()
         self.create_widgets()
         with open("common_english_words.txt", "r") as text:
@@ -92,18 +95,19 @@ class Screen:
             for word in range(20):
                 self.set_of_words.append(random.choice(words).lower())
             self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
-                                       height=4, width=50, wrap="word")
-            self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8, pady=15)
+                                       height=4, width=60, wrap="word")
+            self.generated_text.grid(column=0, row=1, rowspan=3, columnspan=9, pady=35)
             self.generated_text.insert(END, self.change_into_txt(self.set_of_words).lower())
 
     def create_text_hard(self):
+        """Creates sample of 20 words randomly chosen from english_words library."""
         self.clear_screen()
         self.create_widgets()
         for word in range(20):
             self.set_of_words.append(random.choice(list(get_english_words_set(['web2'], lower=True))))
         self.generated_text = Text(self.window, fg="#fafafa", bg="#000000", font=("Arial", 20, "bold"),
-                                   height=5, width=50, wrap="word")
-        self.generated_text.grid(column=0, row=2, rowspan=3, columnspan=8, pady=15)
+                                   height=5, width=60, wrap="word")
+        self.generated_text.grid(column=0, row=1, rowspan=3, columnspan=9, pady=35)
         self.generated_text.insert(END, self.change_into_txt(self.set_of_words))
 
     def change_into_txt(self, list_of_words):
@@ -112,6 +116,7 @@ class Screen:
         return text
 
     def clear_screen(self):
+        """Resets the whole app and destroys widgets."""
         self.difficulty_label.destroy()
         self.set_of_words.clear()
         self.text = ""
@@ -158,6 +163,7 @@ class Screen:
         return mistakes
 
     def show_mistake(self, difference):
+        """Changes a letter in the Text widget into a wrongly typed one and changes its color into red."""
         entry_len = len(self.entry_txt) - 1 - difference
         self.generated_text.tag_config("#ff0000", foreground="#ff0000")
         char = self.entry_txt[len(self.entry_txt) - 1 - difference]
@@ -167,6 +173,7 @@ class Screen:
         self.generated_text.tag_add("#ff0000", f"1.{entry_len}")
 
     def show_correct(self, difference):
+        """Changes a letter's color in the Text widget into green when typed correctly."""
         entry_len = len(self.entry_txt) - 1 - difference
         self.generated_text.tag_config("#2AAA8A", foreground="#2AAA8A")
         char = self.text[len(self.entry_txt) - 1 - difference]
@@ -175,6 +182,7 @@ class Screen:
         self.generated_text.tag_add("#2AAA8A", f"1.{entry_len}")
 
     def show_original_letter(self):
+        """Shows white original letter in the Text widget on backspace."""
         self.generated_text.tag_config("#fafafa", foreground="#fafafa")
         char = self.text[len(self.entry_txt)]
         self.generated_text.delete(f"1.{len(self.entry_txt)}")
@@ -182,6 +190,9 @@ class Screen:
         self.generated_text.tag_add("#fafafa", f"1.{len(self.entry_txt)}")
 
     def check_spelling(self):
+        """Main method that checks how accurate the spelling is. Compares typed letters in the Entry Field,
+        to the previously generated text in the Text widget. Calls other functions on each written character
+        to show mistakes, correctness, points and original letters on backspace."""
         letters = []
         letters_string = ""
         number = -1
@@ -197,6 +208,7 @@ class Screen:
                     number = -1
                     # if len(self.written_words[word - 1]) < len(self.set_of_words[word - 1]):
                     #     self.lack = len(self.set_of_words[word - 1]) - len(self.written_words[word - 1])
+                        # self.sum_of_lack += self.lack
                 letters.append(letter)
                 letters_string = ''.join(letters)
             self.written_words = letters_string.split(" ")
@@ -234,11 +246,13 @@ class Screen:
         # print(self.written_words)
 
     def count_time(self, count):
+        """Adds seconds to the timer and updates time on the Screen."""
         if self.time_start:
             self.time = self.window.after(1000, self.count_time, count + 1)
             self.timer_text['text'] = count
 
     def start_timer(self):
+        """Starts timer when any character is typed in the Entry Field. Stops, when Entry Field is empty."""
         if len(self.entry_txt) == 1:
             self.time_start = True
             self.count_time(0)
@@ -246,6 +260,7 @@ class Screen:
             self.time_start = False
 
     def update_screen_board(self):
+        """Updates all the scores on the board with each change in them."""
         self.cpm_value['text'] = self.points
         if int(self.timer_text['text']) > 0:
             self.net_wpm = (int(((self.points / 5) - (self.mistakes * ((int(self.timer_text['text'])) / 60))) /
@@ -259,6 +274,7 @@ class Screen:
             self.mist_value.config(fg="#fafafa")
 
     def count_score(self):
+        """Counts all the scores and accuracy, shows them as a messagebox in the end of the test."""
         self.time_start = False
         cpm = int(self.points)
         wpm = int((self.points / 5) / ((int(self.timer_text['text'])) / 60))
@@ -274,12 +290,14 @@ class Screen:
         self.save_score(self.net_wpm)
 
     def save_score(self, net_wpn):
+        """Saves the highest score into data.txt."""
         if self.net_wpm > self.high_score:
             self.high_score = self.net_wpm
             with open("data.txt", mode="w") as data:
                 data.write(f"{self.high_score}")
 
     def restart(self):
+        """Restarts the whole app to the 'Choose a difficulty' screen."""
         try:
             self.window.destroy()
             self.window.after_cancel(self.time)
@@ -319,15 +337,15 @@ class Screen:
 
         # entry field
         entry_label = Label(text="WRITE BELOW:", width=15, bg="#000000", fg="#fafafa", font=("Tahoma", 12, "bold"))
-        entry_label.grid(column=0, row=5)
+        entry_label.grid(column=1, row=5)
         self.entry = StringVar()
         self.entry.trace_add('write', self.text_callback)
-        self.entry_field = Entry(self.window, width=100, textvariable=self.entry, bg="#242424", fg="#fafafa",
+        self.entry_field = Entry(self.window, width=95, textvariable=self.entry, bg="#242424", fg="#fafafa",
                                  font=("Arial", 12, "bold"))
-        self.entry_field.grid(column=0, row=6, columnspan=8, pady=15)
+        self.entry_field.grid(column=1, row=6, columnspan=8, pady=15)
         self.entry_field.bind("<BackSpace>", self.backspace)
 
         # restart button
         restart = Button(text="RESTART", font=("Tahoma", 12, "bold"), bg="#000000", fg="#fafafa",
                          command=self.restart)
-        restart.grid(column=8, row=6)
+        restart.grid(column=8, row=7)
