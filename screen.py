@@ -70,7 +70,7 @@ class Screen:
                                "After each word, type a SINGLE SPACE. \n"
                                "After rewriting the whole text, the test will end, and the app will count \n"
                                "and provide you with the final results. \n"
-                               "Each mistake counts, but you can fix them without a points penalty. \n"
+                               "Each mistake counts, but you can fix them using backspace without a points penalty. \n"
                                "The application automatically saves the highest score. \n"
                                "LEGEND: WPM - Words Per Minute, CPM - Characters Per Minute, \n"
                                "NET WPN - WPN with counted mistakes.")
