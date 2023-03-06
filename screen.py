@@ -8,22 +8,28 @@ import keyboard
 class Screen:
 
     def __init__(self):
+        # Main Window
         self.window = Tk()
         self.window.title("Typing Speed App")
         self.window.minsize(150, 150)
         self.window.config(padx=30, pady=10, bg="#000000")
 
+        # Application's widgets
         self.difficulty_label = Label()
         self.generated_text = Text()
         self.entry_field = Entry()
         self.entry = Entry()
+        self.mist_value = Label()
+        self.wpm_value = Label()
+        self.cpm_value = Label()
+
+        # Application's variables
         self.timer_text = None
         self.time = None
         self.points = 0
         self.time_start = False
         with open("data.txt") as data:
             self.high_score = int(data.read())
-
         self.set_of_words = []
         self.written_words = []
         self.text = ""
@@ -34,13 +40,8 @@ class Screen:
         self.words_points = 0
         self.net_wpm = 0
         self.difference = 0
-        self.lack = 0
-        self.sum_of_lack = 0
 
-        self.mist_value = Label()
-        self.wpm_value = Label()
-        self.cpm_value = Label()
-
+        # Creates Starting Screen and an application loop
         self.choose_difficulty()
         self.window.mainloop()
 
@@ -127,12 +128,15 @@ class Screen:
         self.window.update()
 
     def text_callback(self, var, index, mode):
+        """Calls methods which checks spelling, updates Screen Board and starts timer thanks to tracing an input
+        in an Entry Widget."""
         self.entry_txt = self.entry_field.get()
         self.check_spelling()
         self.update_screen_board()
         self.start_timer()
 
     def backspace(self, event):
+        """Watches for backspace usage in an Entry Widget and updates Spelling Points."""
         try:
             self.spelling.pop()
             self.spelling_points = self.count_points()
@@ -181,7 +185,7 @@ class Screen:
         self.generated_text.tag_add("#2AAA8A", f"1.{entry_len}")
 
     def show_original_letter(self):
-        """Shows white original letter in the Text widget on backspace."""
+        """Shows original letter in white color in the Text widget on backspace."""
         self.generated_text.tag_config("#fafafa", foreground="#fafafa")
         char = self.text[len(self.entry_txt)]
         self.generated_text.delete(f"1.{len(self.entry_txt)}")
