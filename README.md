@@ -4,11 +4,19 @@ This is a simple application that allows you to check your typing speed. It offe
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/Veluthil/Typing-Speed-Test-App.git`
+1. Clone the repository: 
+```
+git clone https://github.com/Veluthil/Typing-Speed-Test-App.git
+```
 2. Change directory into the project folder
-3. Create virtual environment: `py -m venv venv venv/Scripts/activate`
-4. Install the required packages: `pip install -r requirements.txt`
-
+3. Create virtual environment: 
+```
+py -m venv venv venv/Scripts/activate
+```
+4. Install the required packages: 
+```
+pip install -r requirements.txt
+```
 To get started, simply run the `main.py` file. The app will launch and display the starting screen:
 
 ![typing_speed](https://user-images.githubusercontent.com/108438343/223138463-7fa322ad-c945-4cff-bdc8-31aa4aabeaff.png)
