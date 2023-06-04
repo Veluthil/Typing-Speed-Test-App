@@ -11,7 +11,8 @@ git clone https://github.com/Veluthil/Typing-Speed-Test-App.git
 2. Change directory into the project folder
 3. Create virtual environment: 
 ```
-py -m venv venv venv/Scripts/activate
+py -m venv venv
+venv/Scripts/activate
 ```
 4. Install the required packages: 
 ```
